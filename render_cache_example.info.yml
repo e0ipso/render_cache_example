@@ -1,0 +1,4 @@
+name: 'Render Cache example'
+description: 'Example of the Render Cache for the "Building the Fastest Drupal of the Galaxy" talk.'
+type: module
+core: 8.x
