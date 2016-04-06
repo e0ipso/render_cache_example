@@ -93,6 +93,9 @@ class FirstNodeBlock extends BlockBase implements BlockPluginInterface, Containe
 
   /**
    * {@inheritdoc}
+   *
+   * @see https://api.drupal.org/api/drupal/core%21lib%21Drupal%21Core%21Render%21Renderer.php/function/Renderer%3A%3AaddCacheableDependency/8
+   * @see https://api.drupal.org/api/drupal/core%21lib%21Drupal%21Core%21Render%21theme.api.php/group/theme_render/8#sec_caching
    */
   public function build() {
     $node = $this->getFirstNode();
@@ -102,6 +105,11 @@ class FirstNodeBlock extends BlockBase implements BlockPluginInterface, Containe
       '#tag' => 'h4',
       '#value' => $label,
     ];
+    // Use the renderer service to add the cacheability metadata from the node
+    // as a dependency to our render array. It will get the tags, contexts and
+    // max age and add them to $build['#render']. In this case we are only
+    // interested in the tags, but it's a good practise to add the cacheable
+    // dependency as a whole.
     $this->renderer->addCacheableDependency($build, $node);
     return $build;
   }
