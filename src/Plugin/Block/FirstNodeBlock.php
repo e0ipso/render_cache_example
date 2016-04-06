@@ -11,6 +11,7 @@ use Drupal\Core\Block\BlockBase;
 use Drupal\Core\Block\BlockPluginInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
+use Drupal\Core\Render\RendererInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
@@ -31,6 +32,13 @@ class FirstNodeBlock extends BlockBase implements BlockPluginInterface, Containe
   protected $storageManager;
 
   /**
+   * The renderer.
+   *
+   * @var RendererInterface
+   */
+  protected $renderer;
+
+  /**
    * The first node.
    *
    * @var \Drupal\node\NodeInterface
@@ -40,9 +48,10 @@ class FirstNodeBlock extends BlockBase implements BlockPluginInterface, Containe
   /**
    * {@inheritdoc}
    */
-  public function __construct(array $configuration, $plugin_id, $plugin_definition, EntityTypeManagerInterface $entity_type_manager) {
+  public function __construct(array $configuration, $plugin_id, $plugin_definition, EntityTypeManagerInterface $entity_type_manager, RendererInterface $renderer) {
     parent::__construct($configuration, $plugin_id, $plugin_definition);
     $this->storageManager = $entity_type_manager->getStorage('node');
+    $this->renderer = $renderer;
   }
 
   /**
@@ -53,7 +62,8 @@ class FirstNodeBlock extends BlockBase implements BlockPluginInterface, Containe
       $configuration,
       $plugin_id,
       $plugin_definition,
-      $container->get('entity_type.manager')
+      $container->get('entity_type.manager'),
+      $container->get('renderer')
     );
   }
 
@@ -87,11 +97,13 @@ class FirstNodeBlock extends BlockBase implements BlockPluginInterface, Containe
   public function build() {
     $node = $this->getFirstNode();
     $label = $node ? $node->label() : $this->t('No nodes yet');
-    return [
+    $build = [
       '#type' => 'html_tag',
       '#tag' => 'h4',
       '#value' => $label,
     ];
+    $this->renderer->addCacheableDependency($build, $node);
+    return $build;
   }
 
 }
