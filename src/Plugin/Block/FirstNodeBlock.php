@@ -121,7 +121,18 @@ class FirstNodeBlock extends BlockBase implements BlockPluginInterface, Containe
           'Hello %username!',
           ['%username' => $this->currentUser->getDisplayName()]
         ),
+        '#cache' => [
+          'contexts' => ['user'],
+        ],
       ],
+      // We could have used addCacheableDependency, as well but for the sake
+      // of the example we wanted to illustrate that some times you'll have to
+      // add your cacheability metadata manually.
+      //
+      // $this->renderer->addCacheableDependency(
+      //   $build['username'],
+      //   $this->currentUser
+      // );
     ];
     // Use the renderer service to add the cacheability metadata from the node
     // as a dependency to our render array. It will get the tags, contexts and
