@@ -12,6 +12,7 @@ use Drupal\Core\Block\BlockPluginInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
 use Drupal\Core\Render\RendererInterface;
+use Drupal\Core\Session\AccountProxyInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
@@ -46,12 +47,20 @@ class FirstNodeBlock extends BlockBase implements BlockPluginInterface, Containe
   protected $node;
 
   /**
+   * The logged in user.
+   *
+   * @var AccountProxyInterface
+   */
+  protected $currentUser;
+
+  /**
    * {@inheritdoc}
    */
-  public function __construct(array $configuration, $plugin_id, $plugin_definition, EntityTypeManagerInterface $entity_type_manager, RendererInterface $renderer) {
+  public function __construct(array $configuration, $plugin_id, $plugin_definition, EntityTypeManagerInterface $entity_type_manager, RendererInterface $renderer, AccountProxyInterface $current_user) {
     parent::__construct($configuration, $plugin_id, $plugin_definition);
     $this->storageManager = $entity_type_manager->getStorage('node');
     $this->renderer = $renderer;
+    $this->currentUser = $current_user;
   }
 
   /**
@@ -63,7 +72,8 @@ class FirstNodeBlock extends BlockBase implements BlockPluginInterface, Containe
       $plugin_id,
       $plugin_definition,
       $container->get('entity_type.manager'),
-      $container->get('renderer')
+      $container->get('renderer'),
+      $container->get('current_user')
     );
   }
 
@@ -104,6 +114,14 @@ class FirstNodeBlock extends BlockBase implements BlockPluginInterface, Containe
       '#type' => 'html_tag',
       '#tag' => 'h4',
       '#value' => $label,
+      'username' => [
+        '#type' => 'html_tag',
+        '#tag' => 'span',
+        '#value' => $this->t(
+          'Hello %username!',
+          ['%username' => $this->currentUser->getDisplayName()]
+        ),
+      ],
     ];
     // Use the renderer service to add the cacheability metadata from the node
     // as a dependency to our render array. It will get the tags, contexts and
