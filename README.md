@@ -1,5 +1,5 @@
 # Render Cache Example
-This module is the code for the session about caching in DrupalCamp Spain 2016 (Granada).
+This module is the code for the [session](http://glsr.it/DrupalGRXSun) about caching in DrupalCamp Spain 2016 (Granada).
 
 It contains an example of the practical use of cache tags and cache contexts, along with common pitfalls and how to solve them.
 
